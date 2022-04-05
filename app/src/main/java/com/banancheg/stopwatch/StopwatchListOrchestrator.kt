@@ -7,49 +7,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class StopwatchListOrchestrator(
-    private val stopwatchStateHolder: StopwatchStateHolder,
-    private val scope: CoroutineScope
+    private val stopwatchStateHolderList: List<StopwatchStateHolder>
 ) {
-
-    private var job: Job? = null
-    private val mutableTicker = MutableStateFlow(TimestampMillisecondsFormatter.DEFAULT_TIME)
-    val ticker: StateFlow<String> = mutableTicker
-
-    fun start() {
-        if (job == null) startJob()
-        stopwatchStateHolder.start()
+    fun start(stateHolder: StopwatchStateHolder) {
+        stateHolder.start()
     }
 
-    fun pause() {
-        stopwatchStateHolder.pause()
-        stopJob()
+    fun pause(stateHolder: StopwatchStateHolder) {
+        stateHolder.pause()
     }
 
-    fun stop() {
-        stopwatchStateHolder.stop()
-        stopJob()
-        clearValue()
+    fun stop(stateHolder: StopwatchStateHolder) {
+        stateHolder.stop()
     }
 
-    private fun startJob() {
-        job = scope.launch {
-            while (isActive) {
-                mutableTicker.value = stopwatchStateHolder.getStringTimeRepresentation()
-                delay(TICK_DELAY)
-            }
-        }
+    fun startAll() {
+        stopwatchStateHolderList.forEach { it.start() }
     }
 
-    private fun stopJob() {
-        scope.coroutineContext.cancelChildren()
-        job = null
+    fun pauseAll() {
+        stopwatchStateHolderList.forEach { it.pause() }
     }
 
-    fun clearValue() {
-        mutableTicker.value = TimestampMillisecondsFormatter.DEFAULT_TIME
-    }
-
-    companion object {
-        private const val TICK_DELAY: Long = 20
+    fun stopAll() {
+        stopwatchStateHolderList.forEach { it.stop() }
     }
 }

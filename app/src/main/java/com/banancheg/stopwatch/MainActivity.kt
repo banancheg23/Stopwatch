@@ -18,39 +18,77 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val stopwatchListOrchestrator = StopwatchListOrchestrator(
-        StopwatchStateHolder(
-            stopwatchStateCalculator = StopwatchStateCalculator(
-                timestampProvider,
-                ElapsedTimeCalculator(timestampProvider)
-            ),
-            timestampMillisecondsFormatter = TimestampMillisecondsFormatter(),
-            elapsedTimeCalculator = ElapsedTimeCalculator(timestampProvider),
-        ),
-        CoroutineScope(Dispatchers.Default + SupervisorJob())
-    )
+    private val stopwatchStateHolderList: MutableList<StopwatchStateHolder> = mutableListOf()
+    private val stopwatchListOrchestrator = StopwatchListOrchestrator(stopwatchStateHolderList)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        repeat(STOPWATCH_COUNT) {
+            stopwatchStateHolderList.add(
+                StopwatchStateHolder(
+                    StopwatchStateCalculator(
+                        timestampProvider,
+                        ElapsedTimeCalculator(timestampProvider)
+                    ),
+                    TimestampMillisecondsFormatter(),
+                    ElapsedTimeCalculator(timestampProvider),
+                )
+            )
+        }
+
         CoroutineScope(Dispatchers.Main + SupervisorJob()).launch {
-            stopwatchListOrchestrator.ticker.collect { timeString ->
+            stopwatchStateHolderList[0].ticker.collect { timeString ->
                 binding.time.text = timeString
             }
         }
 
+        CoroutineScope(Dispatchers.Main + SupervisorJob()).launch {
+            stopwatchStateHolderList[1].ticker.collect { timeString ->
+                binding.time2.text = timeString
+            }
+        }
+
         binding.buttonStart.setOnClickListener {
-            stopwatchListOrchestrator.start()
+            stopwatchListOrchestrator.start(stopwatchStateHolderList[0])
         }
 
         binding.buttonPause.setOnClickListener {
-            stopwatchListOrchestrator.pause()
+            stopwatchListOrchestrator.pause(stopwatchStateHolderList[0])
         }
 
         binding.buttonStop.setOnClickListener {
-            stopwatchListOrchestrator.stop()
+            stopwatchListOrchestrator.stop(stopwatchStateHolderList[0])
         }
+
+        binding.buttonStart2.setOnClickListener {
+            stopwatchListOrchestrator.start(stopwatchStateHolderList[1])
+        }
+
+        binding.buttonPause2.setOnClickListener {
+            stopwatchListOrchestrator.pause(stopwatchStateHolderList[1])
+        }
+
+        binding.buttonStop2.setOnClickListener {
+            stopwatchListOrchestrator.stop(stopwatchStateHolderList[1])
+        }
+
+        binding.buttonStartAll.setOnClickListener {
+            stopwatchListOrchestrator.startAll()
+        }
+
+        binding.buttonPauseAll.setOnClickListener {
+            stopwatchListOrchestrator.pauseAll()
+        }
+
+        binding.buttonStopAll.setOnClickListener {
+            stopwatchListOrchestrator.stopAll()
+        }
+    }
+
+    companion object {
+        private const val STOPWATCH_COUNT = 2
     }
 }

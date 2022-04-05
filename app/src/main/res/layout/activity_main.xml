@@ -8,41 +8,108 @@
 
     <TextView
         android:id="@+id/time"
+        style="@style/Timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/time_holder"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/Timer"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonStart"
+        style="@style/SimpleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_start"
-        style="@style/SimpleButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/time" />
 
     <Button
         android:id="@+id/buttonPause"
+        style="@style/SimpleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_pause"
-        style="@style/SimpleButton"
         app:layout_constraintEnd_toStartOf="@+id/buttonStop"
         app:layout_constraintStart_toEndOf="@+id/buttonStart"
         app:layout_constraintTop_toBottomOf="@+id/time" />
 
     <Button
         android:id="@+id/buttonStop"
+        style="@style/SimpleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_stop"
-        style="@style/SimpleButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/time" />
+
+    <TextView
+        android:id="@+id/time2"
+        style="@style/Timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/time_holder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonStart2"
+        style="@style/SimpleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_start"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time2" />
+
+    <Button
+        android:id="@+id/buttonPause2"
+        style="@style/SimpleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_pause"
+        app:layout_constraintEnd_toStartOf="@+id/buttonStop2"
+        app:layout_constraintStart_toEndOf="@+id/buttonStart2"
+        app:layout_constraintTop_toBottomOf="@+id/time2" />
+
+    <Button
+        android:id="@+id/buttonStop2"
+        style="@style/SimpleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_stop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time2" />
+
+    <Button
+        android:id="@+id/buttonStartAll"
+        style="@style/SimpleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="START ALL"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonPauseAll"
+        style="@style/SimpleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PAUSE ALL"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonStopAll"
+        app:layout_constraintStart_toEndOf="@+id/buttonStartAll" />
+
+    <Button
+        android:id="@+id/buttonStopAll"
+        style="@style/SimpleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STOP ALL"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
