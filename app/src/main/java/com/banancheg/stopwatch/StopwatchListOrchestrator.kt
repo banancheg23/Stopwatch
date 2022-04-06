@@ -1,35 +1,56 @@
 package com.banancheg.stopwatch
 
-import com.banancheg.stopwatch.data.StopwatchStateHolder
-import com.banancheg.stopwatch.data.TimestampMillisecondsFormatter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class StopwatchListOrchestrator(
-    private val stopwatchStateHolderList: List<StopwatchStateHolder>
+    private val stopwatchStateHolderList: List<StopwatchStateHolder>,
+    private val scope: CoroutineScope,
 ) {
-    fun start(stateHolder: StopwatchStateHolder) {
-        stateHolder.start()
+
+    private var job: Job? = null
+    private val mutableTicker = MutableStateFlow("")
+    val ticker: StateFlow<String> = mutableTicker
+
+    fun start() {
+        if (job == null) startJob()
+        stopwatchStateHolderList[0].start()
     }
 
-    fun pause(stateHolder: StopwatchStateHolder) {
-        stateHolder.pause()
+    private fun startJob() {
+        scope.launch {
+            while (isThereRunningStopwatch()) {
+                mutableTicker.value = stopwatchStateHolderList[0].getStringTimeRepresentation()
+                delay(20)
+            }
+        }
     }
 
-    fun stop(stateHolder: StopwatchStateHolder) {
-        stateHolder.stop()
+    fun pause() {
+        stopwatchStateHolderList[0].pause()
+        stopJob()
     }
 
-    fun startAll() {
-        stopwatchStateHolderList.forEach { it.start() }
+    fun stop() {
+        stopwatchStateHolderList[0].stop()
+        stopJob()
+        clearValue()
     }
 
-    fun pauseAll() {
-        stopwatchStateHolderList.forEach { it.pause() }
+    private fun stopJob() {
+        job?.cancel()
+        job = null
     }
 
-    fun stopAll() {
-        stopwatchStateHolderList.forEach { it.stop() }
+    private fun clearValue() {
+        mutableTicker.value = "00:00:000"
+    }
+
+    private fun isThereRunningStopwatch(): Boolean {
+        stopwatchStateHolderList.forEach {
+            if (it.currentState is StopwatchState.Running) return true
+        }
+        return false
     }
 }

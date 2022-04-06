@@ -1,11 +1,12 @@
-package com.banancheg.stopwatch.data
+package com.banancheg.stopwatch
 
 sealed class StopwatchState {
+
     data class Paused(
         val elapsedTime: Long
     ) : StopwatchState()
 
-    data class Started(
+    data class Running(
         val startTime: Long,
         val elapsedTime: Long
     ) : StopwatchState()
