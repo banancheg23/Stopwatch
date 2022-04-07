@@ -1,56 +1,44 @@
 package com.banancheg.stopwatch
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import org.koin.java.KoinJavaComponent.inject
+import kotlin.random.Random
 
-class StopwatchListOrchestrator(
-    private val stopwatchStateHolderList: List<StopwatchStateHolder>,
-    private val scope: CoroutineScope,
-) {
+class StopwatchListOrchestrator() {
 
-    private var job: Job? = null
-    private val mutableTicker = MutableStateFlow("")
-    val ticker: StateFlow<String> = mutableTicker
+    private val stopwatchStateHolderMap: HashMap<Int, StopwatchStateHolder> = HashMap()
 
-    fun start() {
-        if (job == null) startJob()
-        stopwatchStateHolderList[0].start()
-    }
-
-    private fun startJob() {
-        scope.launch {
-            while (isThereRunningStopwatch()) {
-                mutableTicker.value = stopwatchStateHolderList[0].getStringTimeRepresentation()
-                delay(20)
-            }
+    fun initStopwatches(count: Int): Set<Int> {
+        repeat(count) {
+            val stopwatchStateHolder: StopwatchStateHolder by inject(StopwatchStateHolder::class.java)
+            stopwatchStateHolderMap[Random.nextInt(0, 999999)] = stopwatchStateHolder
         }
+
+        return stopwatchStateHolderMap.keys
     }
 
-    fun pause() {
-        stopwatchStateHolderList[0].pause()
-        stopJob()
+    fun start(stopwatchId: Int) {
+        stopwatchStateHolderMap[stopwatchId]?.start()
     }
 
-    fun stop() {
-        stopwatchStateHolderList[0].stop()
-        stopJob()
-        clearValue()
+    fun pause(stopwatchId: Int) {
+        stopwatchStateHolderMap[stopwatchId]?.pause()
     }
 
-    private fun stopJob() {
-        job?.cancel()
-        job = null
+    fun stop(stopwatchId: Int) {
+        stopwatchStateHolderMap[stopwatchId]?.stop()
     }
 
-    private fun clearValue() {
-        mutableTicker.value = "00:00:000"
+    fun startAll() {
+        stopwatchStateHolderMap.values.onEach { it.start() }
     }
 
-    private fun isThereRunningStopwatch(): Boolean {
-        stopwatchStateHolderList.forEach {
-            if (it.currentState is StopwatchState.Running) return true
-        }
-        return false
+    fun stopAll() {
+        stopwatchStateHolderMap.values.onEach { it.stop() }
     }
+
+    fun pauseAll() {
+        stopwatchStateHolderMap.values.onEach { it.pause() }
+    }
+
+    fun getStopwatchStateFlow(stopwatchId: Int) = stopwatchStateHolderMap[stopwatchId]?.ticker
 }

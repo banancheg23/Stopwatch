@@ -1,7 +1,7 @@
-package com.gb.stopwatch
+package com.banancheg.stopwatch
 
 class ElapsedTimeCalculator(
-    private val timestampProvider: TimestampProvider,
+    private val timestampProvider: ITimestampProvider,
 ) {
 
     fun calculate(state: StopwatchState.Running): Long {

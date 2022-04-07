@@ -10,29 +10,45 @@ class MainViewModel(
     private val stopwatchListOrchestrator: StopwatchListOrchestrator
 ) : ViewModel() {
 
-    init {
-        coroutineScope.launch {
-            stopwatchListOrchestrator.ticker.collect {
-                liveData.postValue(it)
+    private val liveDataMap: HashMap<Int, MutableLiveData<String>> = HashMap()
+
+    fun subscribe(stopwatchId: Int): LiveData<String>? {
+        return liveDataMap[stopwatchId]
+    }
+
+    fun start(stopwatchId: Int) {
+        stopwatchListOrchestrator.start(stopwatchId)
+    }
+
+    fun pause(stopwatchId: Int) {
+        stopwatchListOrchestrator.pause(stopwatchId)
+    }
+
+    fun stop(stopwatchId: Int) {
+        stopwatchListOrchestrator.stop(stopwatchId)
+    }
+
+    fun startAll() {
+        stopwatchListOrchestrator.startAll()
+    }
+
+    fun stopAll() {
+        stopwatchListOrchestrator.stopAll()
+    }
+
+    fun pauseAll() {
+        stopwatchListOrchestrator.pauseAll()
+    }
+
+    fun initStopwatches(count: Int): Set<Int> {
+        return stopwatchListOrchestrator.initStopwatches(count).onEach { id ->
+            liveDataMap[id] = MutableLiveData()
+
+            coroutineScope.launch {
+                stopwatchListOrchestrator.getStopwatchStateFlow(id)?.collect { stopwatchValue ->
+                    liveDataMap[id]?.postValue(stopwatchValue)
+                }
             }
         }
-    }
-
-    private val liveData: MutableLiveData<String> = MutableLiveData()
-
-    fun subscribe(): LiveData<String> {
-        return liveData
-    }
-
-    fun start() {
-        stopwatchListOrchestrator.start()
-    }
-
-    fun pause() {
-        stopwatchListOrchestrator.pause()
-    }
-
-    fun stop() {
-        stopwatchListOrchestrator.stop()
     }
 }
